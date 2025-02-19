@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/orange"
+        tools:context=".MainActivity">
+
+
+    <TextView
+            android:id="@+id/textView"
+            android:layout_width="169dp"
+            android:layout_height="80dp"
+            android:text="Sparfuchs"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" android:layout_marginTop="4dp"
+            app:layout_constraintHorizontal_bias="0.046"
+            android:textColor="@color/black"
+    />
+    <Button
+            android:id="@+id/button_pdf"
+            android:text="PDF hochladen"
+            app:layout_constraintTop_toBottomOf="@id/textView"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" android:layout_marginTop="100dp"
+            app:layout_constraintHorizontal_bias="0.5"
+            style="@style/BlackButton"/>
+    <Button
+            android:text="Beschreibung"
+            android:id="@+id/button_beschreibung"
+            app:layout_constraintTop_toBottomOf="@id/textView"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" android:layout_marginTop="180dp"
+            app:layout_constraintHorizontal_bias="0.5"
+            style="@style/BlackButton"/>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

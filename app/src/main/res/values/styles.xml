@@ -1,0 +1,9 @@
+<resources>
+    <style name="BlackButton">
+        <item name="android:backgroundTint">#000000</item>
+        <item name="android:textColor">#FFFFFF</item>
+        <item name="android:layout_width">300dp</item> <!-- Breite -->
+        <item name="android:layout_height">80dp</item>  <!-- Höhe -->
+        <item name="android:textSize">18sp</item> <!-- Schriftgröße -->
+    </style>
+</resources>
