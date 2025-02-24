@@ -23,6 +23,12 @@
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
+        <activity android:name=".PdfUploadActivity"
+                  android:theme="@style/Theme.AppCompat.Light"/>
+
+
     </application>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+
 
 </manifest>
