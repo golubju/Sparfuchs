@@ -10,7 +10,7 @@ android {
 
     defaultConfig {
         applicationId = "com.example.sparfuchs"
-        minSdk = 24
+        minSdk = 26
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
@@ -37,11 +37,16 @@ android {
     packaging {
         resources {
             excludes += "META-INF/DEPENDENCIES"
+            excludes += "META-INF/LICENSE.md"
+            excludes += "META-INF/NOTICE.md"
+
         }
     }
 }
 
 dependencies {
+    implementation ("androidx.activity:activity-ktx:1.6.0")
+    implementation ("androidx.core:core-ktx:1.10.0")
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
     implementation("androidx.core:core-ktx:1.10.1")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.1")
@@ -59,7 +64,7 @@ dependencies {
     androidTestImplementation("androidx.compose.ui:ui-test-junit4")
     debugImplementation("androidx.compose.ui:ui-tooling")
     debugImplementation("androidx.compose.ui:ui-test-manifest")
-    implementation("org.apache.pdfbox:pdfbox:2.0.27")
+    implementation ("com.itextpdf:itext7-core:7.2.5")
 
 
 }
