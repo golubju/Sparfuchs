@@ -29,12 +29,11 @@
             app:layout_constraintHorizontal_bias="0.5"
             style="@style/BlackButton"/>
     <Button
-            android:text="Beschreibung"
-            android:id="@+id/button_beschreibung"
+            android:text="Transaktionen Übersicht"
             app:layout_constraintTop_toBottomOf="@id/textView"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent" android:layout_marginTop="180dp"
             app:layout_constraintHorizontal_bias="0.5"
-            style="@style/BlackButton"/>
+            style="@style/BlackButton" android:id="@+id/button_transactions"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

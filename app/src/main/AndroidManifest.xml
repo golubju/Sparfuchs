@@ -26,6 +26,9 @@
         <activity android:name=".PdfUploadActivity"
                   android:theme="@style/Theme.AppCompat.Light"/>
 
+        <activity android:name=".TransactionOverviewActivity" />
+
+
 
     </application>
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>

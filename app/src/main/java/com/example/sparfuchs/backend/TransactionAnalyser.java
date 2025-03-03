@@ -20,7 +20,7 @@ public class TransactionAnalyser {
         categories.add(new Category("TANKEN", Arrays.asList("TANKSTELLE", "SHELL", "ARAL", "ESSO", "TOTAL", "TANK")));
         categories.add(new Category("TRANSPORT", Arrays.asList("BAHNTICKET", "ÖPNV", "BVG", "DB")));
         categories.add(new Category("GASTRONOMIE", Arrays.asList("RESTAURANT", "MCDONALD'S", "BURGER KING", "PIZZERIA", "CAFÉ")));
-        categories.add(new Category("GESUNDHEIT & FITNESS", Arrays.asList("FITNESS", "GYM", "SPORT", "GESUNDHEIT")));
+        categories.add(new Category("FITNESS", Arrays.asList("FITNESS", "GYM", "SPORT", "GESUNDHEIT")));
         categories.add(new Category("FREIZEIT & UNTERHALTUNG", Arrays.asList("KINO", "NETFLIX", "SPOTIFY", "DISNEY", "THEATER")));
         categories.add(new Category("KLEIDUNG & MODE", Arrays.asList("KLEIDUNG", "MODE", "H&M", "ZARA", "C&A")));
         categories.add(new Category("ONLINE-SHOPPING", Arrays.asList("AMAZON", "EBAY", "BESTELLUNG")));
@@ -29,22 +29,22 @@ public class TransactionAnalyser {
         categories.add(new Category("AUSZAHLUNG", Arrays.asList("GELDAUTOMAT", "AUSZAHLUNG", "ABHEBUNG")));
         categories.add(new Category("EINZAHLUNG", Arrays.asList("EINZAHLUNG", "BUCHUNG")));
         categories.add(new Category("KONTOSTAND", Arrays.asList("KONTOSTAND", "AUSZUG")));
+        categories.add(new Category("GEHALT", Arrays.asList("LOHN", "GEHALT","NEBENJOB")));
+        categories.add(new Category("GESCHENKE", Arrays.asList("GESCHENK", "GEBURTSTAG")));
         categories.add(new Category("BANK", Arrays.asList("ZINSEN", "WERTPAPIER","KONTOGEBÜHREN")));
 
     }
 
-    public void setCategory(Transaction transaction){
-        String text=transaction.getDescription().toUpperCase();
+    public String getCategory(TransactionEntity transactionEntity){
+        String text= transactionEntity.getDescription().toUpperCase();
         for (Category category: categories){
             for(String words: category.getDescription()){
                 if(text.contains(words)){
-                    transaction.setCategory(category.getName());
+                    return category.getName();
                 }
             }
         }
-        if(transaction.getCategory()== null){
-            transaction.setCategory("SONSTIGES");
-        }
+            return "SONSTIGES";
     }
 
 
