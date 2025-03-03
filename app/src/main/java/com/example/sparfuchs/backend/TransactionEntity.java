@@ -16,7 +16,7 @@ public class TransactionEntity {
         this.amount = amount;
         this.description = description;
         this.date = date;
-        this.category = assignCategory();
+        this.category = assignCategory().getName();
     }
 
     // Getter & Setter
@@ -56,8 +56,7 @@ public class TransactionEntity {
         this.category = category;
     }
 
-    // Methode zur Kategorisierung
-    private String assignCategory() {
+    private Category assignCategory() {
         TransactionAnalyser transactionAnalyser = new TransactionAnalyser();
         return transactionAnalyser.getCategory(this);
     }

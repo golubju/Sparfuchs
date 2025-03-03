@@ -39,7 +39,6 @@ public class ExpandableTransactionAdapter extends RecyclerView.Adapter<Expandabl
         holder.transactionsList.setLayoutManager(new LinearLayoutManager(holder.itemView.getContext()));
         holder.transactionsList.setAdapter(new TransactionAdapter(transactions));
 
-        // Sichtbarkeit setzen
         if (expandedCategories.contains(category)) {
             holder.transactionsList.setVisibility(View.VISIBLE);
         } else {

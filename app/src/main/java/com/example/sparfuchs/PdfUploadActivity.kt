@@ -9,8 +9,12 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
+import com.example.sparfuchs.backend.AppDatabase
 import com.example.sparfuchs.backend.PdfParser
 import com.example.sparfuchs.backend.TransactionEntity
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 
 class PdfUploadActivity : AppCompatActivity() {
 
@@ -54,16 +58,22 @@ class PdfUploadActivity : AppCompatActivity() {
         try {
             val transactions: List<TransactionEntity> = PdfParser.extractTransactionsFromPDF(context, uri)
 
-            for (transaction in transactions) {
-                System.out.println(transaction)
+            val db = AppDatabase.getInstance(context)
+            val transactionDao = db.transactionDao()
+
+            CoroutineScope(Dispatchers.IO).launch {
+                transactionDao.insertAll(transactions)
             }
 
-            val resultTextView = "PDF geparst"
-            Toast.makeText(this, resultTextView, Toast.LENGTH_LONG).show()
+            runOnUiThread {
+                Toast.makeText(this, "Transaktionen gespeichert!", Toast.LENGTH_LONG).show()
+            }
 
         } catch (e: Exception) {
-            Toast.makeText(this, "Fehler beim Parsen des PDFs.", Toast.LENGTH_SHORT).show()
+            runOnUiThread {
+                Toast.makeText(this, "Fehler beim Parsen des PDFs.", Toast.LENGTH_SHORT).show()
+            }
             e.printStackTrace()
         }
     }
-}
+    }

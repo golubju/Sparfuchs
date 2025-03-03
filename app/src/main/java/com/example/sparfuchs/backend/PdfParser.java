@@ -1,16 +1,12 @@
 package com.example.sparfuchs.backend;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.pdf.PdfRenderer;
 import android.net.Uri;
-import android.os.ParcelFileDescriptor;
+import com.example.sparfuchs.backend.TransactionEntity;
+import com.itextpdf.kernel.pdf.PdfDocument;
+import com.itextpdf.kernel.pdf.PdfReader;
+import com.itextpdf.kernel.pdf.canvas.parser.PdfTextExtractor;
 
-import com.googlecode.tesseract.android.TessBaseAPI;
-
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
 import java.util.regex.Matcher;
@@ -21,92 +17,66 @@ public class PdfParser {
     public static List<TransactionEntity> extractTransactionsFromPDF(Context context, Uri pdfUri) {
         List<TransactionEntity> transactions = new ArrayList<>();
 
-
         try {
-            ParcelFileDescriptor fileDescriptor = context.getContentResolver().openFileDescriptor(pdfUri, "r");
-
-            if (fileDescriptor == null) return transactions;
-
-            PdfRenderer pdfRenderer = new PdfRenderer(fileDescriptor);
+            InputStream inputStream = context.getContentResolver().openInputStream(pdfUri);
+            PdfReader reader = new PdfReader(inputStream);
+            PdfDocument pdfDoc = new PdfDocument(reader);
 
             StringBuilder extractedText = new StringBuilder();
 
-            TessBaseAPI tessBaseAPI = new TessBaseAPI();
-            tessBaseAPI.setVariable("user_defined_dpi", "300");
-
-
-            String tessDataPath = context.getFilesDir().getAbsolutePath();
-
-            copyTessData(context, "deu.traineddata", tessDataPath);
-            File tessFile = new File(tessDataPath + "deu.traineddata");
-
-            File tessDir = new File(tessDataPath);
-
-            tessBaseAPI.init(tessDataPath, "deu");
-
-            for (int i = 0; i < pdfRenderer.getPageCount(); i++) {
-                System.out.println("TEST1");
-                PdfRenderer.Page page = pdfRenderer.openPage(i);
-                Bitmap bitmap = Bitmap.createBitmap(100, 100, Bitmap.Config.ARGB_8888);
-                System.out.println("groesse:"+page.getHeight()+page.getWidth());
-                page.render(bitmap, null, null, PdfRenderer.Page.RENDER_MODE_FOR_DISPLAY);
-                page.close();
-                System.out.println("TEST2");
-                tessBaseAPI.setImage(bitmap);
-                System.out.println("TEST3");
-                String text = tessBaseAPI.getUTF8Text();
-                extractedText.append(text).append("\n");
-                System.out.println(extractedText);
+            for (int i = 1; i <= pdfDoc.getNumberOfPages(); i++) {
+                String pageText = PdfTextExtractor.getTextFromPage(pdfDoc.getPage(i));
+                extractedText.append(pageText).append("\n");
             }
 
-            pdfRenderer.close();
-            fileDescriptor.close();
-            tessBaseAPI.end();
-            Pattern pattern = Pattern.compile("(\\d{2}\\.\\d{2}\\.\\d{4})\\s+(.+?)\\s+(-?\\d{1,3}(?:\\.\\d{3})*,\\d{2})");
-            Matcher matcher = pattern.matcher(extractedText.toString());
+            pdfDoc.close();
+            inputStream.close();
 
-            while (matcher.find()) {
-                String date = matcher.group(1);
-                String description = matcher.group(2).trim();
-                String amountStr = matcher.group(3).replace(".", "").replace(",", ".");
-                double amount = Double.parseDouble(amountStr);
+            System.out.println("Extrahierter Text:\n" + extractedText);
 
-                transactions.add(new TransactionEntity(date, description, amount));
+            // Regex für Datumszeilen (jede Transaktion beginnt mit einem Datum)
+            Pattern datePattern = Pattern.compile("(\\d{2}\\.\\d{2}\\.\\d{4})");
+            Matcher dateMatcher = datePattern.matcher(extractedText.toString());
+
+            List<Integer> dateIndices = new ArrayList<>();
+            while (dateMatcher.find()) {
+                dateIndices.add(dateMatcher.start());
             }
 
-        } catch (IOException e) {
+            // Transaktionen anhand von Datumspositionen extrahieren
+            for (int i = 0; i < dateIndices.size(); i++) {
+                int startIdx = dateIndices.get(i);
+                int endIdx = (i + 1 < dateIndices.size()) ? dateIndices.get(i + 1) : extractedText.length();
+                String transactionText = extractedText.substring(startIdx, endIdx).trim();
+
+                // Das erste gefundene Datum als Transaktionsdatum nehmen
+                Matcher dateMatch = datePattern.matcher(transactionText);
+                String date = dateMatch.find() ? dateMatch.group(1) : "Unbekannt";
+
+                // Betrag extrahieren (erster gefundener Betrag innerhalb der Transaktion)
+                String amount = extractAmount(transactionText);
+
+                // Beschreibung bereinigen (alles außer Datum und Betrag)
+                String description = transactionText.replace(date, "").replace(amount, "").trim();
+
+                transactions.add(new TransactionEntity(date, description, amount.isEmpty() ? 0.0 : Double.parseDouble(amount)));
+            }
+
+        } catch (Exception e) {
             e.printStackTrace();
         }
-        System.out.println(transactions);
 
         return transactions;
     }
-    private static void copyTessData(Context context, String fileName, String targetPath) {
-        File tessDir = new File(targetPath);
-        if (!tessDir.exists()) {
-            boolean created = tessDir.mkdirs();
 
+    private static String extractAmount(String transactionText) {
+        // Betrag kann negativ oder positiv sein und hat das Format 1.234,56 oder -123,45
+        Pattern amountPattern = Pattern.compile("(-?\\d{1,3}(?:\\.\\d{3})*,\\d{2})");
+        Matcher amountMatcher = amountPattern.matcher(transactionText);
+
+        if (amountMatcher.find()) {
+            return amountMatcher.group(1).replace(".", "").replace(",", ".");
         }
-
-        File tessFile = new File(targetPath + fileName);
-
-        if (tessFile.exists()) {
-            tessFile.delete();
-        }
-
-        try (InputStream in = context.getAssets().open("tessdata/" + fileName);
-             FileOutputStream out = new FileOutputStream(tessFile)) {
-
-            byte[] buffer = new byte[1024];
-            int read;
-            while ((read = in.read(buffer)) != -1) {
-                out.write(buffer, 0, read);
-            }
-            out.flush();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        return "";
     }
-
-
 }

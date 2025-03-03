@@ -35,16 +35,16 @@ public class TransactionAnalyser {
 
     }
 
-    public String getCategory(TransactionEntity transactionEntity){
+    public Category getCategory(TransactionEntity transactionEntity){
         String text= transactionEntity.getDescription().toUpperCase();
         for (Category category: categories){
             for(String words: category.getDescription()){
                 if(text.contains(words)){
-                    return category.getName();
+                    return category;
                 }
             }
         }
-            return "SONSTIGES";
+            return new Category("SONSTIGES",null);
     }
 
 
