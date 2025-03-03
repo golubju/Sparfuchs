@@ -23,9 +23,10 @@ class TransactionOverviewActivity : ComponentActivity() {
         val db = AppDatabase.getInstance(this)
 
         lifecycleScope.launch(Dispatchers.IO) {
+            //db.transactionDao().deleteAll()
             /**
             // Test-Transaktionen einfügen
-            db.transactionDao().deleteAll() // Löscht alte Daten
+             // Löscht alte Daten
             val testTransactions = listOf(
                 TransactionEntity("01.01.2025", "Gehalt", 2500.00),
                 TransactionEntity("10.01.2025", "Steuerrückzahlung", 300.00),

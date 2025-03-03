@@ -14,7 +14,7 @@ import java.util.regex.Pattern;
 
 public class PdfParser {
 
-    public static List<TransactionEntity> extractTransactionsFromPDF(Context context, Uri pdfUri) {
+    public static List<TransactionEntity> extractTransactionsFromPDF(Context context, Uri pdfUri, String bank) {
         List<TransactionEntity> transactions = new ArrayList<>();
 
         try {
@@ -34,33 +34,14 @@ public class PdfParser {
 
             System.out.println("Extrahierter Text:\n" + extractedText);
 
-            // Regex für Datumszeilen (jede Transaktion beginnt mit einem Datum)
-            Pattern datePattern = Pattern.compile("(\\d{2}\\.\\d{2}\\.\\d{4})");
-            Matcher dateMatcher = datePattern.matcher(extractedText.toString());
+            switch (bank.toUpperCase()){
+                case("DKB"): return parsingDBK(extractedText);
+                case ("DEUTSCHE BANK"): return parsingDeutschBank(extractedText);
+                case ("SPARKASSE"):return parsingSparkasse(extractedText);
+                case ("POSTBANK"): return parsingPostbank(extractedText);
 
-            List<Integer> dateIndices = new ArrayList<>();
-            while (dateMatcher.find()) {
-                dateIndices.add(dateMatcher.start());
-            }
+                }
 
-            // Transaktionen anhand von Datumspositionen extrahieren
-            for (int i = 0; i < dateIndices.size(); i++) {
-                int startIdx = dateIndices.get(i);
-                int endIdx = (i + 1 < dateIndices.size()) ? dateIndices.get(i + 1) : extractedText.length();
-                String transactionText = extractedText.substring(startIdx, endIdx).trim();
-
-                // Das erste gefundene Datum als Transaktionsdatum nehmen
-                Matcher dateMatch = datePattern.matcher(transactionText);
-                String date = dateMatch.find() ? dateMatch.group(1) : "Unbekannt";
-
-                // Betrag extrahieren (erster gefundener Betrag innerhalb der Transaktion)
-                String amount = extractAmount(transactionText);
-
-                // Beschreibung bereinigen (alles außer Datum und Betrag)
-                String description = transactionText.replace(date, "").replace(amount, "").trim();
-
-                transactions.add(new TransactionEntity(date, description, amount.isEmpty() ? 0.0 : Double.parseDouble(amount)));
-            }
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -68,6 +49,59 @@ public class PdfParser {
 
         return transactions;
     }
+
+    private static List<TransactionEntity> parsingPostbank(StringBuilder extractedText) {
+        return null;
+    }
+
+    private static List<TransactionEntity> parsingSparkasse(StringBuilder extractedText) {
+        return null;
+    }
+
+
+
+    private static List<TransactionEntity> parsingDeutschBank(StringBuilder extractedText) {
+        return null;
+    }
+
+    private static List<TransactionEntity> parsingDBK(StringBuilder extractedText) {
+            List<TransactionEntity> transactions = new ArrayList<>();
+            String text = extractedText.toString();
+            int startIdx = text.indexOf("Kontostand");
+            if (startIdx != -1) {
+                text = text.substring(startIdx + "Kontostand".length()).trim();
+            }
+            int endIdx = text.indexOf("Kontostand");
+            if (endIdx != -1) {
+                text = text.substring(0, endIdx).trim();
+            }
+            Pattern transactionPattern = Pattern.compile(
+                    "(-?\\d{1,3}(?:\\.\\d{3})*,\\d{2})\\s*\\n\\s*(\\d{2}\\.\\d{2}\\.\\d{4})"
+            );
+            Matcher matcher = transactionPattern.matcher(text);
+            List<Integer> transactionIndices = new ArrayList<>();
+            while (matcher.find()) {
+                transactionIndices.add(matcher.start());
+            }
+            for (int i = 0; i < transactionIndices.size(); i++) {
+                int transStart = transactionIndices.get(i);
+                int transEnd = (i + 1 < transactionIndices.size()) ? transactionIndices.get(i + 1) : text.length();
+                String transactionText = text.substring(transStart, transEnd).trim();
+                Matcher transMatcher = transactionPattern.matcher(transactionText);
+                if (transMatcher.find()) {
+                    String amountStr = transMatcher.group(1).replace(".", "").replace(",", ".");
+                    double amount = Double.parseDouble(amountStr);
+                    String date = transMatcher.group(2);
+                    String description = transactionText.substring(transMatcher.end()).trim();
+                    transactions.add(new TransactionEntity(date, description, amount));
+                }
+            }
+
+            return transactions;
+
+
+    }
+
 
     private static String extractAmount(String transactionText) {
         // Betrag kann negativ oder positiv sein und hat das Format 1.234,56 oder -123,45

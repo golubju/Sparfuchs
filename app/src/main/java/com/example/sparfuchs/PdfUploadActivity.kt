@@ -1,24 +1,23 @@
 package com.example.sparfuchs
 
-import android.content.ContentResolver
 import android.content.Context
 import android.net.Uri
 import android.os.Bundle
-import android.widget.Button
-import android.widget.TextView
-import android.widget.Toast
+import android.widget.*
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
-import com.example.sparfuchs.backend.AppDatabase
+import androidx.lifecycle.lifecycleScope
 import com.example.sparfuchs.backend.PdfParser
 import com.example.sparfuchs.backend.TransactionEntity
-import kotlinx.coroutines.CoroutineScope
+import com.example.sparfuchs.backend.AppDatabase
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 
 class PdfUploadActivity : AppCompatActivity() {
 
-    private val txtFileName: TextView by lazy { findViewById(R.id.txtFileName) }
+    private lateinit var txtFileName: TextView
+    private lateinit var bankSpinner: Spinner
+    private lateinit var btnUpload: Button
 
     private val getPdfLauncher =
         registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
@@ -29,10 +28,23 @@ class PdfUploadActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.pdfupload)
 
-        val btnUpload: Button = findViewById(R.id.btnUpload)
+        // UI-Elemente initialisieren
+        txtFileName = findViewById(R.id.txtFileName)
+        bankSpinner = findViewById(R.id.spinnerBanks)
+        btnUpload = findViewById(R.id.btnUpload)
+
+        // Spinner mit Banknamen füllen
+        val bankList = listOf("Bitte wählen", "Deutsche Bank", "Sparkasse", "Commerzbank", "ING", "DKB")
+        val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, bankList)
+        bankSpinner.adapter = adapter
 
         btnUpload.setOnClickListener {
-            getPdfLauncher.launch("application/pdf")
+            val selectedBank = bankSpinner.selectedItem.toString()
+            if (selectedBank == "Bitte wählen") {
+                Toast.makeText(this, "Bitte eine Bank auswählen!", Toast.LENGTH_SHORT).show()
+            } else {
+                getPdfLauncher.launch("application/pdf")
+            }
         }
     }
 
@@ -40,7 +52,13 @@ class PdfUploadActivity : AppCompatActivity() {
         val fileName = getFileNameFromUri(uri)
         txtFileName.text = "Ausgewählte Datei: $fileName"
 
-        parsePdf(uri, this)
+        val selectedBank = bankSpinner.selectedItem.toString()
+        if (selectedBank == "Bitte wählen") {
+            Toast.makeText(this, "Bitte eine Bank auswählen!", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        parsePdf(uri, this, selectedBank)
     }
 
     private fun getFileNameFromUri(uri: Uri): String? {
@@ -54,19 +72,23 @@ class PdfUploadActivity : AppCompatActivity() {
         return null
     }
 
-    private fun parsePdf(uri: Uri, context: Context) {
+    private fun parsePdf(uri: Uri, context: Context, bank: String) {
         try {
-            val transactions: List<TransactionEntity> = PdfParser.extractTransactionsFromPDF(context, uri)
+            val transactions: List<TransactionEntity> = PdfParser.extractTransactionsFromPDF(context, uri, bank)
 
+            if (transactions.isEmpty()) {
+                Toast.makeText(this, "Keine Transaktionen gefunden.", Toast.LENGTH_SHORT).show()
+                return
+            }
             val db = AppDatabase.getInstance(context)
             val transactionDao = db.transactionDao()
 
-            CoroutineScope(Dispatchers.IO).launch {
+            lifecycleScope.launch(Dispatchers.IO) {
                 transactionDao.insertAll(transactions)
-            }
 
-            runOnUiThread {
-                Toast.makeText(this, "Transaktionen gespeichert!", Toast.LENGTH_LONG).show()
+                runOnUiThread {
+                    Toast.makeText(this@PdfUploadActivity, "Transaktionen für $bank gespeichert!", Toast.LENGTH_LONG).show()
+                }
             }
 
         } catch (e: Exception) {
@@ -76,4 +98,4 @@ class PdfUploadActivity : AppCompatActivity() {
             e.printStackTrace()
         }
     }
-    }
+}
