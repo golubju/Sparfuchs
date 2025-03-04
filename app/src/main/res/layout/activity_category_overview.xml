@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:orientation="vertical"
+              android:padding="16dp">
+
+
+    <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycler_view_categories"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp" />
+
+    <EditText
+            android:id="@+id/edit_category_name"
+            android:layout_width="match_parent"
+            android:hint="Neuer Kategoriename"
+            android:padding="8dp"
+            android:layout_height="50dp"
+    />
+
+    <EditText
+            android:id="@+id/edit_category_keywords"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:hint="Keywords (getrennt mit ,)"
+            android:padding="8dp" />
+
+    <Button
+            android:id="@+id/update_category_button"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:text="Kategorie aktualisieren" />
+    <Button
+            android:id="@+id/add_category_button"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:text="Kategorie hinzufügen"/>
+
+    <Button
+            android:id="@+id/delete_category_button"
+            android:layout_width="200dp"
+            android:layout_height="wrap_content"
+            android:text="Kategorie löschen"/>
+
+</LinearLayout>
