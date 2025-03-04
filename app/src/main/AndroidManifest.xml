@@ -27,6 +27,7 @@
                   android:theme="@style/Theme.AppCompat.Light"/>
 
         <activity android:name=".TransactionOverviewActivity" />
+        <activity android:name=".CategoryOverviewActivity" />
 
 
 
