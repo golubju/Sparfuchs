@@ -23,8 +23,7 @@ class TransactionOverviewActivity : ComponentActivity() {
         val db = AppDatabase.getInstance(this)
 
         lifecycleScope.launch(Dispatchers.IO) {
-            //db.transactionDao().deleteAll()
-            /**
+            db.transactionDao().deleteAll()
             // Test-Transaktionen einfügen
              // Löscht alte Daten
             val testTransactions = listOf(
@@ -70,7 +69,7 @@ class TransactionOverviewActivity : ComponentActivity() {
                 TransactionEntity("16.01.2025", "Spende", -20.00)
             )
             db.transactionDao().insertAll(testTransactions)
-            **/
+
 
             val transactions = db.transactionDao().getAllTransactions()
             val groupedTransactions = transactions.groupBy { it.category }
