@@ -32,7 +32,7 @@ public class PdfParser {
             pdfDoc.close();
             inputStream.close();
 
-            System.out.println("Extrahierter Text:\n" + extractedText);
+            //System.out.println("Extrahierter Text:\n" + extractedText);
 
             switch (bank.toUpperCase()){
                 case("DKB"): return parsingDBK(extractedText);
@@ -55,10 +55,48 @@ public class PdfParser {
     }
 
     private static List<TransactionEntity> parsingSparkasse(StringBuilder extractedText) {
-        return null;
+        List<TransactionEntity> transactions = new ArrayList<>();
+        String text = extractedText.toString();
+
+        int indexOfAuszug = text.indexOf("Auszug");
+        if (indexOfAuszug != -1) {
+            text = text.substring(indexOfAuszug);
+        }
+
+        int indexOfKontostand = text.indexOf("Kontostand");
+        if (indexOfKontostand != -1) {
+            text = text.substring(0,indexOfKontostand);
+        }
+
+
+        // Regex für eine Transaktion: Datum + Beschreibung + Betrag + optionaler restlicher Beschreibung
+        Pattern transactionPattern = Pattern.compile("(\\d{2}\\.\\d{2}\\.\\d{4})\\s*(\\S+.*?)\\s*(-?\\d{1,3}(?:\\.\\d{3})*,\\d{2})\\s*(.*?)(?=\\n\\d{2}\\.\\d{2}\\.\\d{4}|$)", Pattern.DOTALL);
+        Matcher matcher = transactionPattern.matcher(text);
+
+        while (matcher.find()) {
+            String date = matcher.group(1).trim(); // Datum
+            String firstDescriptionPart = matcher.group(2).trim(); // Erster Teil der Beschreibung
+            String amountStr = matcher.group(3).trim(); // Betrag
+            String remainingDescription = matcher.group(4) != null ? matcher.group(4).trim() : ""; // Rest der Beschreibung
+
+            // Falls die restliche Beschreibung mit einem Datum beginnt, ignorieren
+            if (remainingDescription.matches("\\d{2}\\.\\d{2}\\.\\d{4}.*")) {
+                remainingDescription = "";
+            }
+
+            // Betrag formatieren
+            amountStr = amountStr.replace(".", "").replace(",", ".");
+            double amount = Double.parseDouble(amountStr);
+
+            String description = firstDescriptionPart;
+            if (!remainingDescription.isEmpty()) {
+                description += " " + remainingDescription;
+            }
+
+            transactions.add(new TransactionEntity(date, description, amount));
+        }
+        return transactions;
     }
-
-
 
     private static List<TransactionEntity> parsingDeutschBank(StringBuilder extractedText) {
         return null;
