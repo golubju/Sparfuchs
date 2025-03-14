@@ -32,8 +32,6 @@ public class PdfParser {
             pdfDoc.close();
             inputStream.close();
 
-            //System.out.println("Extrahierter Text:\n" + extractedText);
-
             switch (bank.toUpperCase()){
                 case("DKB"): return parsingDBK(extractedText);
                 case ("DEUTSCHE BANK"): return parsingDeutschBank(extractedText);

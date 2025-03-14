@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.sparfuchs"
+       namespace = "com.example.sparfuchs"
     compileSdk = 35
 
     defaultConfig {

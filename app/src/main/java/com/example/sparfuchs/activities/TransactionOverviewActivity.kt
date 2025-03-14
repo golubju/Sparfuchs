@@ -1,4 +1,4 @@
-package com.example.sparfuchs
+package com.example.sparfuchs.activities
 
 import android.os.Bundle
 import android.util.Log
@@ -6,8 +6,9 @@ import androidx.activity.ComponentActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.sparfuchs.ExpandableTransactionAdapter
+import com.example.sparfuchs.R
 import com.example.sparfuchs.backend.AppDatabase
-import com.example.sparfuchs.backend.TransactionEntity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -23,9 +24,11 @@ class TransactionOverviewActivity : ComponentActivity() {
         val db = AppDatabase.getInstance(this)
 
         lifecycleScope.launch(Dispatchers.IO) {
-            db.transactionDao().deleteAll()
+            ///db.transactionDao().deleteAll()
             // Test-Transaktionen einfügen
              // Löscht alte Daten
+
+            /**
             val testTransactions = listOf(
                 TransactionEntity("01.01.2025", "Gehalt", 2500.00),
                 TransactionEntity("10.01.2025", "Steuerrückzahlung", 300.00),
@@ -69,6 +72,7 @@ class TransactionOverviewActivity : ComponentActivity() {
                 TransactionEntity("16.01.2025", "Spende", -20.00)
             )
             db.transactionDao().insertAll(testTransactions)
+            **/
 
 
             val transactions = db.transactionDao().getAllTransactions()

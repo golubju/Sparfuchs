@@ -1,4 +1,4 @@
-package com.example.sparfuchs
+package com.example.sparfuchs.activities
 
 import CategoryAdapter
 import CategoryViewModel
@@ -7,10 +7,10 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
 import androidx.activity.ComponentActivity
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.sparfuchs.R
 import com.example.sparfuchs.backend.CategoryEntity
 
 class CategoryOverviewActivity : ComponentActivity() {

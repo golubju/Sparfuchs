@@ -1,11 +1,11 @@
-package com.example.sparfuchs
+package com.example.sparfuchs.activities
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.widget.Button
 import androidx.activity.ComponentActivity
 import androidx.activity.enableEdgeToEdge
+import com.example.sparfuchs.R
 
 
 class MainActivity : ComponentActivity() {

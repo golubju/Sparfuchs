@@ -3,7 +3,6 @@ import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.viewModelScope
 import com.example.sparfuchs.backend.AppDatabase
-import com.example.sparfuchs.backend.Category
 import com.example.sparfuchs.backend.CategoryEntity
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
