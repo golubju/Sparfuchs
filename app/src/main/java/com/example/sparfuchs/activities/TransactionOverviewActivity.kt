@@ -1,18 +1,18 @@
 package com.example.sparfuchs.activities
 
-import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.widget.*
 import androidx.activity.ComponentActivity
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MediatorLiveData
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.sparfuchs.ExpandableTransactionAdapter
 import com.example.sparfuchs.R
-import com.example.sparfuchs.backend.AppDatabase
-import com.example.sparfuchs.backend.TransactionEntity
+import com.example.sparfuchs.backend.*
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -32,8 +32,6 @@ class TransactionOverviewActivity : ComponentActivity() {
         db = AppDatabase.getInstance(this)
 
         refreshTransactions()
-
-        // Button zum Löschen aller Transaktionen
         findViewById<Button>(R.id.btn_delete_all).setOnClickListener {
             lifecycleScope.launch(Dispatchers.IO) {
                 db.transactionDao().deleteAll()
@@ -48,6 +46,61 @@ class TransactionOverviewActivity : ComponentActivity() {
             // Pass null for transaction to indicate it's a new transaction
             showTransactionDialog(null)
         }
+        findViewById<Button>(R.id.check_others).setOnClickListener {
+            println("Prüfen")
+            checkTransactions()
+        }
+    }
+
+    private fun checkTransactions() {
+
+        val db = AppDatabase.getInstance(this)
+        val transactionDao = db.transactionDao()
+        val categoryDao = db.categoryDao()
+        val categoriesLiveData = getDefaultCategories(categoryDao)
+        val categoriesList = mutableListOf<Category>()
+
+        categoriesLiveData.observeForever { categories ->
+            categoriesList.clear()
+            categoriesList.addAll(categories)
+            val transactionAnalyser = TransactionAnalyser(categoriesList)
+
+            lifecycleScope.launch(Dispatchers.IO) {
+                val existingTransactions = transactionDao.getAllTransactions()
+
+                val sonstiTransactions = existingTransactions.filter { it.category == "Sonstiges" }
+
+                sonstiTransactions.forEach { transaction ->
+                    val newCategory = transactionAnalyser.getCategory(transaction)
+                    println(transaction.toString())
+                    if (transaction.category != newCategory.name) {
+                        transaction.category = newCategory.name
+
+                        transactionDao.update(transaction)
+                    }
+                }
+            }
+        }
+        refreshTransactions()
+    }
+
+    private fun getDefaultCategories(categoryDao: CategoryDao): LiveData<List<Category>> {
+        val liveData = MediatorLiveData<List<Category>>()
+        liveData.addSource(categoryDao.getAllCategories()) { categoryEntities ->
+            liveData.value = categoryEntities.map { entity ->
+                Category(
+                    entity.name,
+                    entity.keywords.split(",").map { it.trim() }
+                )
+            }
+        }
+        liveData.observeForever { categories ->
+            categories?.let {
+                val categoryNames = it.joinToString(", ") { category -> category.name }
+                println("Categories fetched: $categoryNames")
+            } ?: println("No categories found.")
+        }
+        return liveData
     }
 
     private fun refreshTransactions() {
@@ -108,7 +161,6 @@ class TransactionOverviewActivity : ComponentActivity() {
                             newTransaction.category = newCategory
                             addNewTransaction(newTransaction)
                         } else {
-                            // Edit existing transaction
                             transaction.amount = newAmount
                             transaction.description = newDescription
                             transaction.category = newCategory
@@ -135,7 +187,6 @@ class TransactionOverviewActivity : ComponentActivity() {
         }
     }
 
-    // Update an existing transaction
     private fun updateTransaction(transaction: TransactionEntity) {
         lifecycleScope.launch(Dispatchers.IO) {
             db.transactionDao().update(transaction)
