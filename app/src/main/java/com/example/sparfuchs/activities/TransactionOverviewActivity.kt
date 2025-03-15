@@ -64,6 +64,7 @@ class TransactionOverviewActivity : ComponentActivity() {
             categoriesList.clear()
             categoriesList.addAll(categories)
             val transactionAnalyser = TransactionAnalyser(categoriesList)
+            println(categoriesList.size)
 
             lifecycleScope.launch(Dispatchers.IO) {
                 val existingTransactions = transactionDao.getAllTransactions()
@@ -72,9 +73,10 @@ class TransactionOverviewActivity : ComponentActivity() {
 
                 sonstiTransactions.forEach { transaction ->
                     val newCategory = transactionAnalyser.getCategory(transaction)
-                    println(transaction.toString())
                     if (transaction.category != newCategory.name) {
                         transaction.category = newCategory.name
+                        println(transaction.toString())
+                        println(newCategory.name)
 
                         transactionDao.update(transaction)
                     }
@@ -107,15 +109,19 @@ class TransactionOverviewActivity : ComponentActivity() {
         lifecycleScope.launch(Dispatchers.IO) {
             val transactions = db.transactionDao().getAllTransactions()
             val groupedTransactions = transactions.groupBy { it.category }
+            val categorySums = groupedTransactions.mapValues { entry ->
+                entry.value.sumOf { it.amount }
+            }
 
             withContext(Dispatchers.Main) {
-                adapter = ExpandableTransactionAdapter(groupedTransactions) { transaction ->
+                adapter = ExpandableTransactionAdapter(groupedTransactions, categorySums) { transaction ->
                     showTransactionDialog(transaction)
                 }
                 recyclerView.adapter = adapter
             }
         }
     }
+
 
 
     private fun showTransactionDialog(transaction: TransactionEntity?) {
