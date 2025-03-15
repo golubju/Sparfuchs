@@ -7,8 +7,14 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.sparfuchs.backend.TransactionEntity
 
-class TransactionAdapter(private val transactions: List<TransactionEntity>) :
-    RecyclerView.Adapter<TransactionAdapter.ViewHolder>() {
+class TransactionAdapter(
+    private val transactions: List<TransactionEntity>,
+    private val listener: OnTransactionClickListener // <-- Listener hinzufügen
+) : RecyclerView.Adapter<TransactionAdapter.ViewHolder>() {
+
+    interface OnTransactionClickListener {
+        fun onTransactionClick(transaction: TransactionEntity)
+    }
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val date: TextView = view.findViewById(R.id.transaction_date)
@@ -27,6 +33,10 @@ class TransactionAdapter(private val transactions: List<TransactionEntity>) :
         holder.date.text = transaction.date
         holder.description.text = transaction.description
         holder.amount.text = "${transaction.amount} €"
+
+        holder.itemView.setOnClickListener {
+            listener.onTransactionClick(transaction)
+        }
     }
 
     override fun getItemCount() = transactions.size

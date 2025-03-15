@@ -86,33 +86,44 @@ class PdfUploadActivity : AppCompatActivity() {
                 return
             }
 
-            val db2 = AppDatabase.getInstance(context)
-            val categoryDao = db2.categoryDao()
+            val db = AppDatabase.getInstance(context)
+            val transactionDao = db.transactionDao()
+            val categoryDao = db.categoryDao()
             val categoriesLiveData = getDefaultCategories(categoryDao)
             val categoriesList = mutableListOf<Category>()
 
             categoriesLiveData.observeForever { categories ->
                 categoriesList.clear()
                 categoriesList.addAll(categories)
-                println("Kategorien wurden geladen: ${categoriesList.map { it.name }}")
                 transactionAnalyser = TransactionAnalyser(categoriesList)
-                transactions.forEach { transaction ->
-                    val category = transactionAnalyser.getCategory(transaction)
-                    transaction.category = category.name
-                }
-                val db = AppDatabase.getInstance(context)
-                val transactionDao = db.transactionDao()
 
                 lifecycleScope.launch(Dispatchers.IO) {
-                    transactionDao.insertAll(transactions)
-                    runOnUiThread {
-                        Toast.makeText(this@PdfUploadActivity, "Transaktionen für $bank gespeichert!", Toast.LENGTH_LONG).show()
+                    val existingTransactions = transactionDao.getAllTransactions()
+                    val newTransactions = transactions.filter { newTransaction ->
+                        existingTransactions.none { existingTransaction ->
+                            existingTransaction.date == newTransaction.date &&
+                                    existingTransaction.amount == newTransaction.amount &&
+                                    existingTransaction.description == newTransaction.description
+                        }
+                    }
+
+                    newTransactions.forEach { transaction ->
+                        val category = transactionAnalyser.getCategory(transaction)
+                        transaction.category = category.name
+                    }
+
+                    if (newTransactions.isNotEmpty()) {
+                        transactionDao.insertAll(newTransactions)
+                        runOnUiThread {
+                            Toast.makeText(this@PdfUploadActivity, "${newTransactions.size} neue Transaktionen für $bank gespeichert!", Toast.LENGTH_LONG).show()
+                        }
+                    } else {
+                        runOnUiThread {
+                            Toast.makeText(this@PdfUploadActivity, "Keine neuen Transaktionen zum Speichern.", Toast.LENGTH_SHORT).show()
+                        }
                     }
                 }
             }
-
-
-
         } catch (e: Exception) {
             runOnUiThread {
                 Toast.makeText(this, "Fehler beim Parsen des PDFs.", Toast.LENGTH_SHORT).show()
@@ -120,6 +131,7 @@ class PdfUploadActivity : AppCompatActivity() {
             e.printStackTrace()
         }
     }
+
 
     private fun getDefaultCategories(categoryDao: CategoryDao): LiveData<List<Category>> {
         val liveData = MediatorLiveData<List<Category>>()

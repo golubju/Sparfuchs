@@ -21,6 +21,8 @@ public class TransactionEntity {
         this.category ="";
     }
 
+    public TransactionEntity() {}
+
     // Getter & Setter
     public int getId() {
         return id;
@@ -56,6 +58,9 @@ public class TransactionEntity {
 
     public void setCategory(String category) {
         this.category = category;
+    }
+    public void setId(int id) {
+        this.id = id;
     }
 
     private Category assignCategory(List<Category> pCategories) {

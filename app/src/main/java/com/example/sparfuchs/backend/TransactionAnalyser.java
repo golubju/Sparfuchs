@@ -46,7 +46,7 @@ public class TransactionAnalyser {
                 }
             }
         }
-            return new Category("SONSTIGES",null);
+            return new Category("Sonstiges",null);
     }
 
 

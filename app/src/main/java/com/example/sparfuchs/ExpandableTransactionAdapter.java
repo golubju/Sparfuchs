@@ -17,9 +17,14 @@ import java.util.HashSet;
 public class ExpandableTransactionAdapter extends RecyclerView.Adapter<ExpandableTransactionAdapter.CategoryViewHolder> {
     private final Map<String, List<TransactionEntity>> groupedTransactions;
     private final Set<String> expandedCategories = new HashSet<>();
+    private final TransactionAdapter.OnTransactionClickListener onTransactionClickListener;  // Use TransactionAdapter's listener
 
-    public ExpandableTransactionAdapter(Map<String, List<TransactionEntity>> groupedTransactions) {
+    public interface OnTransactionClickListener extends TransactionAdapter.OnTransactionClickListener {
+    }
+
+    public ExpandableTransactionAdapter(Map<String, List<TransactionEntity>> groupedTransactions, OnTransactionClickListener listener) {
         this.groupedTransactions = groupedTransactions;
+        this.onTransactionClickListener = listener;
     }
 
     @NonNull
@@ -37,15 +42,13 @@ public class ExpandableTransactionAdapter extends RecyclerView.Adapter<Expandabl
 
         holder.categoryTitle.setText(category);
         holder.transactionsList.setLayoutManager(new LinearLayoutManager(holder.itemView.getContext()));
-        holder.transactionsList.setAdapter(new TransactionAdapter(transactions));
 
-        if (expandedCategories.contains(category)) {
-            holder.transactionsList.setVisibility(View.VISIBLE);
-        } else {
-            holder.transactionsList.setVisibility(View.GONE);
-        }
+        // Pass the onTransactionClickListener to TransactionAdapter
+        TransactionAdapter transactionAdapter = new TransactionAdapter(transactions, onTransactionClickListener);
+        holder.transactionsList.setAdapter(transactionAdapter);
 
-        // Klick-Listener für das Ein-/Ausklappen
+        holder.transactionsList.setVisibility(expandedCategories.contains(category) ? View.VISIBLE : View.GONE);
+
         holder.categoryTitle.setOnClickListener(v -> {
             if (expandedCategories.contains(category)) {
                 expandedCategories.remove(category);
@@ -72,3 +75,4 @@ public class ExpandableTransactionAdapter extends RecyclerView.Adapter<Expandabl
         }
     }
 }
+

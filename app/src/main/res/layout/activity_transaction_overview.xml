@@ -8,7 +8,25 @@
     <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recycler_view"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
             android:divider="@android:color/darker_gray"
             android:dividerHeight="1dp"/>
+
+    <Button
+            android:id="@+id/btn_delete_all"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Alle Transaktionen löschen"
+            android:background="@android:color/holo_red_light"
+            android:textColor="#212121"
+            android:layout_marginTop="10dp"/>
+    <Button
+            android:id="@+id/btn_add_transaction"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Neue Transaktion hinzufügen"
+            android:layout_marginTop="16dp"
+            android:layout_gravity="center"/>
+
 </LinearLayout>
