@@ -23,5 +23,9 @@ public interface TransactionDao {
 
     @Update
     void update(TransactionEntity transaction);
+
+    @Query("SELECT * FROM transactions WHERE category = :category")
+    List<TransactionEntity> getTransactionsByCategory(String category);
+
 }
 

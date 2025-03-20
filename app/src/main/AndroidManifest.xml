@@ -28,6 +28,8 @@
 
         <activity android:name=".activities.TransactionOverviewActivity" />
         <activity android:name=".activities.CategoryOverviewActivity" />
+        <activity android:name=".activities.TransactionAnalysisActivity"/>
+
 
 
 
