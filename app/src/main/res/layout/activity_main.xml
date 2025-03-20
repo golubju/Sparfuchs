@@ -6,7 +6,9 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/orange"
-        tools:context=".activities.MainActivity">
+        tools:context=".activities.MainActivity" tools:layout_editor_absoluteY="120dp"
+        tools:layout_editor_absoluteX="-1dp">
+
 
     <!-- Titel -->
     <TextView
@@ -20,7 +22,7 @@
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            android:layout_marginTop="40dp" />
+            android:layout_marginTop="40dp"/>
 
     <!-- PDF Hochladen -->
     <Button
@@ -30,7 +32,7 @@
             app:layout_constraintTop_toBottomOf="@id/textView"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            android:layout_marginTop="80dp" />
+            android:layout_marginTop="80dp"/>
 
     <!-- Transaktionenanalyse -->
     <Button
@@ -40,9 +42,19 @@
             app:layout_constraintTop_toBottomOf="@id/button_pdf"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            android:layout_marginTop="20dp" />
+            android:layout_marginTop="36dp" app:layout_constraintHorizontal_bias="0.495"/>
+    <!-- Tutorial -->
 
     <!-- Transaktionen Verwalten (unten, gleich groß) -->
+
+    <Button
+            android:id="@+id/button_tutorial"
+            android:text="Tutorial"
+            style="@style/BlackButton"
+            app:layout_constraintTop_toBottomOf="@id/button_pdf"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginTop="156dp" app:layout_constraintHorizontal_bias="0.495"/>
     <Button
             android:id="@+id/button_transactions"
             android:text="Transaktionen"
@@ -53,7 +65,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toStartOf="@id/button_categories"
             android:layout_marginBottom="50dp"
-            android:layout_marginEnd="8dp" />
+            android:layout_marginEnd="8dp"/>
 
     <!-- Kategorien Verwalten (unten, gleich groß) -->
     <Button
@@ -66,6 +78,6 @@
             app:layout_constraintStart_toEndOf="@id/button_transactions"
             app:layout_constraintEnd_toEndOf="parent"
             android:layout_marginBottom="50dp"
-            android:layout_marginStart="8dp" />
+            android:layout_marginStart="8dp"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
