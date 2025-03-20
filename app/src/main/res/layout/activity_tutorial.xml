@@ -18,7 +18,7 @@
         <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="2. Um Kategorien zu verwalten, gehen Sie auf <Kategorien>.
+                android:text="2. Um Kategorien zu verwalten, gehen Sie auf /Kategorien/.
                 Sie können der Kategorie einen Namen geben.
                 Tragen sie die Schlüsselwörter, nach denen gesucht werden soll, ein. (Bsp: food, essen, supermarkt)."
                 android:textSize="14sp"/>
@@ -26,13 +26,13 @@
         <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="3. Um Transaktionen einzusehen, gehen sie auf <<Transaktionen>>. Falls sie eine Kategorie hinzugefügt haben und ein Update brauchen, drücken sie <<prüfe sonstige>>"
+                android:text="3. Um Transaktionen einzusehen, gehen sie auf //Transaktionen//. Falls sie eine Kategorie hinzugefügt haben und ein Update brauchen, drücken sie <<prüfe sonstige>>"
                 android:textSize="14sp"/>
 
         <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="4. Die grafischen Ergebnisse sehen sie unter dem Button <<Transaktionenanalyse>> einsehen."
+                android:text="4. Die grafischen Ergebnisse sehen sie unter dem Button //Transaktionenanalyse// einsehen."
                 android:textSize="14sp"/>
         <Button
                 android:id="@+id/button_alles_klar"
