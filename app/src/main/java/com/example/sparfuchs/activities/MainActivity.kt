@@ -20,6 +20,7 @@ class MainActivity : ComponentActivity() {
         val buttonTransactions: Button = findViewById(R.id.button_transactions)
         val buttonCategories: Button = findViewById(R.id.button_categories)
         val buttonAnalyser: Button = findViewById(R.id.button_analyser)
+        val buttonTutorial: Button = findViewById(R.id.button_tutorial)
 
         buttonPdf.setOnClickListener {
             val intent = Intent(this, PdfUploadActivity::class.java)
@@ -37,6 +38,10 @@ class MainActivity : ComponentActivity() {
         }
         buttonAnalyser.setOnClickListener {
             val intent = Intent(this, TransactionAnalysisActivity::class.java)
+            startActivity(intent)
+        }
+        buttonTutorial.setOnClickListener {
+            val intent = Intent(this, TutorialActivity::class.java)
             startActivity(intent)
         }
     }
