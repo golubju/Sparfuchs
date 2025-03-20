@@ -17,6 +17,6 @@ public class TransactionAnalyser {
                 }
             }
         }
-            return new Category("Sonstiges",null);
+            return new Category("nicht zugeordnete Transaktionen",null);
     }
 }

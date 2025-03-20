@@ -41,7 +41,6 @@ class TransactionOverviewActivity : ComponentActivity() {
             showTransactionDialog(null)
         }
         findViewById<Button>(R.id.check_others).setOnClickListener {
-            println("Prüfen")
             checkTransactions()
         }
     }
@@ -63,7 +62,7 @@ class TransactionOverviewActivity : ComponentActivity() {
             lifecycleScope.launch(Dispatchers.IO) {
                 val existingTransactions = transactionDao.getAllTransactions()
 
-                val sonstiTransactions = existingTransactions.filter { it.category == "Sonstiges" }
+                val sonstiTransactions = existingTransactions.filter { it.category == "nicht zugeordnete Transaktionen" }
 
                 sonstiTransactions.forEach { transaction ->
                     val newCategory = transactionAnalyser.getCategory(transaction)
