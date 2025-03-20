@@ -2,7 +2,6 @@ package com.example.sparfuchs.backend;
 
 import android.content.Context;
 import android.net.Uri;
-import com.example.sparfuchs.backend.TransactionEntity;
 import com.itextpdf.kernel.pdf.PdfDocument;
 import com.itextpdf.kernel.pdf.PdfReader;
 import com.itextpdf.kernel.pdf.canvas.parser.PdfTextExtractor;
@@ -16,7 +15,6 @@ public class PdfParser {
 
     public static List<TransactionEntity> extractTransactionsFromPDF(Context context, Uri pdfUri, String bank) {
         List<TransactionEntity> transactions = new ArrayList<>();
-
         try {
             InputStream inputStream = context.getContentResolver().openInputStream(pdfUri);
             PdfReader reader = new PdfReader(inputStream);
@@ -28,16 +26,13 @@ public class PdfParser {
                 String pageText = PdfTextExtractor.getTextFromPage(pdfDoc.getPage(i));
                 extractedText.append(pageText).append("\n");
             }
-
             pdfDoc.close();
             inputStream.close();
-
             switch (bank.toUpperCase()){
                 case("DKB"): return parsingDBK(extractedText);
-                case ("DEUTSCHE BANK"): return parsingDeutschBank(extractedText);
+                case ("DEUTSCHE BANK"): return parsingDeutschBank();
                 case ("SPARKASSE"):return parsingSparkasse(extractedText);
-                case ("POSTBANK"): return parsingPostbank(extractedText);
-
+                case ("POSTBANK"): return parsingPostbank();
                 }
 
 
@@ -48,7 +43,7 @@ public class PdfParser {
         return transactions;
     }
 
-    private static List<TransactionEntity> parsingPostbank(StringBuilder extractedText) {
+    private static List<TransactionEntity> parsingPostbank() {
         return null;
     }
 
@@ -65,24 +60,19 @@ public class PdfParser {
         if (indexOfKontostand != -1) {
             text = text.substring(0,indexOfKontostand);
         }
-
-
-        // Regex für eine Transaktion: Datum + Beschreibung + Betrag + optionaler restlicher Beschreibung
         Pattern transactionPattern = Pattern.compile("(\\d{2}\\.\\d{2}\\.\\d{4})\\s*(\\S+.*?)\\s*(-?\\d{1,3}(?:\\.\\d{3})*,\\d{2})\\s*(.*?)(?=\\n\\d{2}\\.\\d{2}\\.\\d{4}|$)", Pattern.DOTALL);
         Matcher matcher = transactionPattern.matcher(text);
 
         while (matcher.find()) {
-            String date = matcher.group(1).trim(); // Datum
-            String firstDescriptionPart = matcher.group(2).trim(); // Erster Teil der Beschreibung
-            String amountStr = matcher.group(3).trim(); // Betrag
-            String remainingDescription = matcher.group(4) != null ? matcher.group(4).trim() : ""; // Rest der Beschreibung
+            String date = Objects.requireNonNull(matcher.group(1)).trim(); // Datum
+            String firstDescriptionPart = Objects.requireNonNull(matcher.group(2)).trim(); // Erster Teil der Beschreibung
+            String amountStr = Objects.requireNonNull(Objects.requireNonNull(matcher.group(3))).trim(); // Betrag
+            String remainingDescription = matcher.group(4) != null ? Objects.requireNonNull(matcher.group(4)).trim() : ""; // Rest der Beschreibung
 
-            // Falls die restliche Beschreibung mit einem Datum beginnt, ignorieren
             if (remainingDescription.matches("\\d{2}\\.\\d{2}\\.\\d{4}.*")) {
                 remainingDescription = "";
             }
 
-            // Betrag formatieren
             amountStr = amountStr.replace(".", "").replace(",", ".");
             double amount = Double.parseDouble(amountStr);
 
@@ -90,13 +80,12 @@ public class PdfParser {
             if (!remainingDescription.isEmpty()) {
                 description += " " + remainingDescription;
             }
-
             transactions.add(new TransactionEntity(date, description, amount));
         }
         return transactions;
     }
 
-    private static List<TransactionEntity> parsingDeutschBank(StringBuilder extractedText) {
+    private static List<TransactionEntity> parsingDeutschBank() {
         return null;
     }
 
@@ -125,28 +114,13 @@ public class PdfParser {
                 String transactionText = text.substring(transStart, transEnd).trim();
                 Matcher transMatcher = transactionPattern.matcher(transactionText);
                 if (transMatcher.find()) {
-                    String amountStr = transMatcher.group(1).replace(".", "").replace(",", ".");
+                    String amountStr = Objects.requireNonNull(transMatcher.group(1)).replace(".", "").replace(",", ".");
                     double amount = Double.parseDouble(amountStr);
                     String date = transMatcher.group(2);
                     String description = transactionText.substring(transMatcher.end()).trim();
                     transactions.add(new TransactionEntity(date, description, amount));
                 }
             }
-
             return transactions;
-
-
-    }
-
-
-    private static String extractAmount(String transactionText) {
-        // Betrag kann negativ oder positiv sein und hat das Format 1.234,56 oder -123,45
-        Pattern amountPattern = Pattern.compile("(-?\\d{1,3}(?:\\.\\d{3})*,\\d{2})");
-        Matcher amountMatcher = amountPattern.matcher(transactionText);
-
-        if (amountMatcher.find()) {
-            return amountMatcher.group(1).replace(".", "").replace(",", ".");
-        }
-        return "";
     }
 }

@@ -43,12 +43,13 @@ public class ExpandableTransactionAdapter extends RecyclerView.Adapter<Expandabl
     public void onBindViewHolder(@NonNull CategoryViewHolder holder, int position) {
         String category = (String) groupedTransactions.keySet().toArray()[position];
         List<TransactionEntity> transactions = groupedTransactions.get(category);
-        double sum = categorySums.getOrDefault(category, 0.0);  // Summe holen oder 0.0 setzen
+        double sum = categorySums.getOrDefault(category, 0.0);
 
-        holder.categoryTitle.setText(category + " (€" + sum + ")");  // Summe in der UI anzeigen
+        holder.categoryTitle.setText(category + " (€" + sum + ")");
 
         holder.transactionsList.setLayoutManager(new LinearLayoutManager(holder.itemView.getContext()));
 
+        assert transactions != null;
         TransactionAdapter transactionAdapter = new TransactionAdapter(transactions, onTransactionClickListener);
         holder.transactionsList.setAdapter(transactionAdapter);
 

@@ -13,7 +13,6 @@ public class CategoryEntity {
     public CategoryEntity(String name, String keywords) {
         this.name = name;
         this.keywords = keywords;
-
     }
 
     public int getId() {
@@ -21,7 +20,6 @@ public class CategoryEntity {
     }
 
     public String getName() {
-
         return name;
     }
 
@@ -29,18 +27,15 @@ public class CategoryEntity {
         this.name = name;
     }
     public String getKeywords() {
-
         return keywords;
     }
     public void setKeywords(String keywords) {
-
         this.keywords = keywords;
     }
 
     public void setId(int id) {
         this.id = id;
     }
-
 
 }
 

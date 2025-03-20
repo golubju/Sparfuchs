@@ -12,7 +12,6 @@
             android:padding="16dp"
             android:gravity="center_horizontal">
 
-        <!-- Kategorie auswählen -->
         <Spinner
                 android:id="@+id/spinner_category"
                 android:layout_width="match_parent"
@@ -20,14 +19,12 @@
                 android:layout_marginBottom="8dp"
                 android:minHeight="48dp"/>
 
-        <!-- Balkendiagramm -->
         <com.github.mikephil.charting.charts.BarChart
                 android:id="@+id/barChart"
                 android:layout_width="match_parent"
                 android:layout_height="400dp"
                 android:layout_marginBottom="16dp" />
 
-        <!-- Jahr auswählen -->
         <Spinner
                 android:id="@+id/spinner_year"
                 android:layout_width="match_parent"
@@ -35,7 +32,6 @@
                 android:layout_marginBottom="8dp"
                 android:minHeight="48dp"/>
 
-        <!-- Monat auswählen -->
         <Spinner
                 android:id="@+id/spinner_month"
                 android:layout_width="match_parent"

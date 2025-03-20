@@ -1,13 +1,11 @@
-import android.annotation.SuppressLint
+package com.example.sparfuchs
+
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import androidx.recyclerview.widget.DiffUtil
-import com.example.sparfuchs.CategoryDiffCallback
-import com.example.sparfuchs.R
 import com.example.sparfuchs.backend.CategoryEntity
 
 class CategoryAdapter(private val onItemClick: (CategoryEntity) -> Unit) :
@@ -22,8 +20,6 @@ class CategoryAdapter(private val onItemClick: (CategoryEntity) -> Unit) :
     override fun onBindViewHolder(holder: CategoryViewHolder, position: Int) {
         val category = getItem(position)
         holder.bind(category)
-
-        // 🔥 Klick auf eine Kategorie -> Daten zum Bearbeiten setzen
         holder.itemView.setOnClickListener {
             onItemClick(category)
         }

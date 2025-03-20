@@ -40,7 +40,7 @@ class PdfUploadActivity : AppCompatActivity() {
 
 
 
-        val bankList = listOf("Bitte wählen", "Deutsche Bank", "Sparkasse", "Commerzbank", "ING", "DKB")
+        val bankList = listOf("Bitte wählen", "Sparkasse", "DKB")
         val adapter = ArrayAdapter(this, android.R.layout.simple_spinner_dropdown_item, bankList)
         bankSpinner.adapter = adapter
 
@@ -53,11 +53,9 @@ class PdfUploadActivity : AppCompatActivity() {
             }
         }
     }
-
     private fun processPdfUri(uri: Uri) {
         val fileName = getFileNameFromUri(uri)
         txtFileName.text = "Ausgewählte Datei: $fileName"
-
         val selectedBank = bankSpinner.selectedItem.toString()
         if (selectedBank == "Bitte wählen") {
             Toast.makeText(this, "Bitte eine Bank auswählen!", Toast.LENGTH_SHORT).show()
@@ -135,8 +133,6 @@ class PdfUploadActivity : AppCompatActivity() {
 
     private fun getDefaultCategories(categoryDao: CategoryDao): LiveData<List<Category>> {
         val liveData = MediatorLiveData<List<Category>>()
-
-        // Beobachte die Kategorienquelle und aktualisiere liveData
         liveData.addSource(categoryDao.getAllCategories()) { categoryEntities ->
             liveData.value = categoryEntities.map { entity ->
                 Category(
@@ -153,6 +149,4 @@ class PdfUploadActivity : AppCompatActivity() {
         }
         return liveData
     }
-
-
 }
