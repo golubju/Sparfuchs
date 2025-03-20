@@ -2,8 +2,7 @@ package com.example.sparfuchs.backend;
 
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
-
-import java.util.List;
+import org.jetbrains.annotations.NotNull;
 
 @Entity(tableName = "transactions")
 public class TransactionEntity {
@@ -23,7 +22,6 @@ public class TransactionEntity {
 
     public TransactionEntity() {}
 
-    // Getter & Setter
     public int getId() {
         return id;
     }
@@ -63,13 +61,8 @@ public class TransactionEntity {
         this.id = id;
     }
 
-    private Category assignCategory(List<Category> pCategories) {
-        TransactionAnalyser transactionAnalyser = new TransactionAnalyser(pCategories);
-        return transactionAnalyser.getCategory(this);
-    }
-
     @Override
-    public String toString() {
+    public @NotNull String toString() {
         return "---------------\nTransaktion\n" +
                 "ID: " + id +
                 "\nWert: " + amount +

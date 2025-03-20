@@ -37,7 +37,4 @@ public class Category {
             descriptions.add(description);
         }
 
-
-
-
     }

@@ -25,12 +25,9 @@ class TransactionOverviewActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_transaction_overview)
-
         recyclerView = findViewById(R.id.recycler_view)
         recyclerView.layoutManager = LinearLayoutManager(this)
-
         db = AppDatabase.getInstance(this)
-
         refreshTransactions()
         findViewById<Button>(R.id.btn_delete_all).setOnClickListener {
             lifecycleScope.launch(Dispatchers.IO) {
@@ -40,14 +37,10 @@ class TransactionOverviewActivity : ComponentActivity() {
                 }
             }
         }
-
-        // Button zum Hinzufügen einer neuen Transaktion
         findViewById<Button>(R.id.btn_add_transaction).setOnClickListener {
-            // Pass null for transaction to indicate it's a new transaction
             showTransactionDialog(null)
         }
         findViewById<Button>(R.id.check_others).setOnClickListener {
-            println("Prüfen")
             checkTransactions()
         }
     }
@@ -69,7 +62,7 @@ class TransactionOverviewActivity : ComponentActivity() {
             lifecycleScope.launch(Dispatchers.IO) {
                 val existingTransactions = transactionDao.getAllTransactions()
 
-                val sonstiTransactions = existingTransactions.filter { it.category == "Sonstiges" }
+                val sonstiTransactions = existingTransactions.filter { it.category == "nicht zugeordnete Transaktionen" }
 
                 sonstiTransactions.forEach { transaction ->
                     val newCategory = transactionAnalyser.getCategory(transaction)
@@ -122,24 +115,18 @@ class TransactionOverviewActivity : ComponentActivity() {
         }
     }
 
-
-
     private fun showTransactionDialog(transaction: TransactionEntity?) {
         val dialogView = LayoutInflater.from(this).inflate(R.layout.dialog_edit_transaction, null)
         val editAmount = dialogView.findViewById<EditText>(R.id.editAmount)
         val editDescription = dialogView.findViewById<EditText>(R.id.editDescription)
         val editDate = dialogView.findViewById<EditText>(R.id.editDate)
         val spinnerCategory = dialogView.findViewById<Spinner>(R.id.spinnerCategory)
-
-        // Observe categories to populate the spinner
         db.categoryDao().getAllCategories().observe(this) { categories ->
             val categoryNames = categories.map { it.name }
             val categoryAdapter = ArrayAdapter(this@TransactionOverviewActivity, android.R.layout.simple_spinner_item, categoryNames)
             categoryAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
             spinnerCategory.adapter = categoryAdapter
-
-            // If it's an existing transaction, set the current category
-            transaction?.let {
+            transaction?.let { it ->
                 editAmount.setText(it.amount.toString())
                 editDescription.setText(it.description)
                 editDate.setText(it.date)  // Set the current date of the transaction
@@ -147,7 +134,6 @@ class TransactionOverviewActivity : ComponentActivity() {
                 spinnerCategory.setSelection(categoryPosition)
             }
 
-            // Show the dialog
             AlertDialog.Builder(this)
                 .setTitle(if (transaction == null) "Neue Transaktion hinzufügen" else "Transaktion bearbeiten")
                 .setView(dialogView)
@@ -159,7 +145,6 @@ class TransactionOverviewActivity : ComponentActivity() {
 
                     if (newAmount != null && newDate.isNotEmpty()) {
                         if (transaction == null) {
-                            // Create a new transaction
                             val newTransaction = TransactionEntity()
                             newTransaction.date = newDate
                             newTransaction.description = newDescription
@@ -171,7 +156,7 @@ class TransactionOverviewActivity : ComponentActivity() {
                             transaction.description = newDescription
                             transaction.category = newCategory
                             transaction.date = newDate
-                            updateTransaction(transaction) // Update transaction in DB
+                            updateTransaction(transaction)
                         }
                     } else {
                         Toast.makeText(this@TransactionOverviewActivity, "Ungültiger Betrag oder Datum", Toast.LENGTH_SHORT).show()
@@ -181,14 +166,11 @@ class TransactionOverviewActivity : ComponentActivity() {
                 .show()
         }
     }
-
-
-    // Add new transaction to the database
     private fun addNewTransaction(transaction: TransactionEntity) {
         lifecycleScope.launch(Dispatchers.IO) {
-            db.transactionDao().insert(transaction)  // Insert the new transaction
+            db.transactionDao().insert(transaction)
             withContext(Dispatchers.Main) {
-                refreshTransactions()  // Refresh the list of transactions
+                refreshTransactions()
             }
         }
     }

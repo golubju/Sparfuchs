@@ -22,7 +22,6 @@
             app:layout_constraintEnd_toEndOf="parent"
             android:layout_marginTop="40dp" />
 
-    <!-- PDF Hochladen -->
     <Button
             android:id="@+id/button_pdf"
             android:text="PDF hochladen"
@@ -32,7 +31,6 @@
             app:layout_constraintEnd_toEndOf="parent"
             android:layout_marginTop="80dp" />
 
-    <!-- Transaktionenanalyse -->
     <Button
             android:id="@+id/button_analyser"
             android:text="Transaktionenanalyse"
@@ -42,7 +40,6 @@
             app:layout_constraintEnd_toEndOf="parent"
             android:layout_marginTop="20dp" />
 
-    <!-- Transaktionen Verwalten (unten, gleich groß) -->
     <Button
             android:id="@+id/button_transactions"
             android:text="Transaktionen"
@@ -55,7 +52,6 @@
             android:layout_marginBottom="50dp"
             android:layout_marginEnd="8dp" />
 
-    <!-- Kategorien Verwalten (unten, gleich groß) -->
     <Button
             android:id="@+id/button_categories"
             android:text="Kategorien"
