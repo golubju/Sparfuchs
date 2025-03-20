@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-    namespace = "com.example.sparfuchs"
+       namespace = "com.example.sparfuchs"
     compileSdk = 35
 
     defaultConfig {
@@ -71,6 +71,8 @@ dependencies {
     implementation ("androidx.recyclerview:recyclerview:1.3.2")
     implementation ("com.google.mlkit:text-recognition:16.0.0")
     implementation ("com.rmtheis:tess-two:9.1.0")
+    implementation ("com.github.PhilJay:MPAndroidChart:v3.1.0")
+
 
 
 

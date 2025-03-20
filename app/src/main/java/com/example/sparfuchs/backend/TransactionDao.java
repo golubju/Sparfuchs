@@ -3,6 +3,8 @@ package com.example.sparfuchs.backend;
 import androidx.room.Dao;
 import androidx.room.Insert;
 import androidx.room.Query;
+import androidx.room.Update;
+
 import java.util.List;
 
 @Dao
@@ -18,5 +20,12 @@ public interface TransactionDao {
 
     @Query("DELETE FROM transactions")
     void deleteAll();
+
+    @Update
+    void update(TransactionEntity transaction);
+
+    @Query("SELECT * FROM transactions WHERE category = :category")
+    List<TransactionEntity> getTransactionsByCategory(String category);
+
 }
 

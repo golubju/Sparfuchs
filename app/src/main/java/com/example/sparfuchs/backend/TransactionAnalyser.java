@@ -7,10 +7,11 @@ import java.util.List;
 public class TransactionAnalyser {
     List<Category> categories = new ArrayList<Category>();
 
-    public TransactionAnalyser() {
-        createCategories();
-    }
+    public TransactionAnalyser(List<Category> pCategories) {
+        this.categories=pCategories;
 
+    }
+/**
     public void createCategories(){
         categories.add(new Category("LEBENSMITTEL", Arrays.asList("SUPERMARKT", "LIDL", "ALDI", "REWE", "EDEKA", "PENNY", "NETTO")));
         categories.add(new Category("DROGERIE", Arrays.asList("DROGERIE", "DM", "ROSSMANN", "APOTHEKE")));
@@ -34,17 +35,18 @@ public class TransactionAnalyser {
         categories.add(new Category("BANK", Arrays.asList("ZINSEN", "WERTPAPIER","KONTOGEBÜHREN")));
 
     }
+ **/
 
     public Category getCategory(TransactionEntity transactionEntity){
         String text= transactionEntity.getDescription().toUpperCase();
         for (Category category: categories){
             for(String words: category.getDescription()){
-                if(text.contains(words)){
+                if(text.contains(words.toUpperCase())){
                     return category;
                 }
             }
         }
-            return new Category("SONSTIGES",null);
+            return new Category("Sonstiges",null);
     }
 
 

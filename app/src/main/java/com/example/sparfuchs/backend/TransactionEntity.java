@@ -3,6 +3,8 @@ package com.example.sparfuchs.backend;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
+import java.util.List;
+
 @Entity(tableName = "transactions")
 public class TransactionEntity {
     @PrimaryKey(autoGenerate = true)
@@ -16,8 +18,10 @@ public class TransactionEntity {
         this.amount = amount;
         this.description = description;
         this.date = date;
-        this.category = assignCategory().getName();
+        this.category ="";
     }
+
+    public TransactionEntity() {}
 
     // Getter & Setter
     public int getId() {
@@ -55,9 +59,12 @@ public class TransactionEntity {
     public void setCategory(String category) {
         this.category = category;
     }
+    public void setId(int id) {
+        this.id = id;
+    }
 
-    private Category assignCategory() {
-        TransactionAnalyser transactionAnalyser = new TransactionAnalyser();
+    private Category assignCategory(List<Category> pCategories) {
+        TransactionAnalyser transactionAnalyser = new TransactionAnalyser(pCategories);
         return transactionAnalyser.getCategory(this);
     }
 

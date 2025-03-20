@@ -16,10 +16,19 @@ import java.util.HashSet;
 
 public class ExpandableTransactionAdapter extends RecyclerView.Adapter<ExpandableTransactionAdapter.CategoryViewHolder> {
     private final Map<String, List<TransactionEntity>> groupedTransactions;
+    private final Map<String, Double> categorySums;
     private final Set<String> expandedCategories = new HashSet<>();
+    private final TransactionAdapter.OnTransactionClickListener onTransactionClickListener;
 
-    public ExpandableTransactionAdapter(Map<String, List<TransactionEntity>> groupedTransactions) {
+    public interface OnTransactionClickListener extends TransactionAdapter.OnTransactionClickListener {
+    }
+
+    public ExpandableTransactionAdapter(Map<String, List<TransactionEntity>> groupedTransactions,
+                                        Map<String, Double> categorySums,
+                                        OnTransactionClickListener listener) {
         this.groupedTransactions = groupedTransactions;
+        this.categorySums = categorySums;
+        this.onTransactionClickListener = listener;
     }
 
     @NonNull
@@ -34,18 +43,17 @@ public class ExpandableTransactionAdapter extends RecyclerView.Adapter<Expandabl
     public void onBindViewHolder(@NonNull CategoryViewHolder holder, int position) {
         String category = (String) groupedTransactions.keySet().toArray()[position];
         List<TransactionEntity> transactions = groupedTransactions.get(category);
+        double sum = categorySums.getOrDefault(category, 0.0);  // Summe holen oder 0.0 setzen
 
-        holder.categoryTitle.setText(category);
+        holder.categoryTitle.setText(category + " (€" + sum + ")");  // Summe in der UI anzeigen
+
         holder.transactionsList.setLayoutManager(new LinearLayoutManager(holder.itemView.getContext()));
-        holder.transactionsList.setAdapter(new TransactionAdapter(transactions));
 
-        if (expandedCategories.contains(category)) {
-            holder.transactionsList.setVisibility(View.VISIBLE);
-        } else {
-            holder.transactionsList.setVisibility(View.GONE);
-        }
+        TransactionAdapter transactionAdapter = new TransactionAdapter(transactions, onTransactionClickListener);
+        holder.transactionsList.setAdapter(transactionAdapter);
 
-        // Klick-Listener für das Ein-/Ausklappen
+        holder.transactionsList.setVisibility(expandedCategories.contains(category) ? View.VISIBLE : View.GONE);
+
         holder.categoryTitle.setOnClickListener(v -> {
             if (expandedCategories.contains(category)) {
                 expandedCategories.remove(category);
@@ -72,3 +80,5 @@ public class ExpandableTransactionAdapter extends RecyclerView.Adapter<Expandabl
         }
     }
 }
+
+
